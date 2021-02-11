@@ -1,0 +1,16 @@
+*:before,
+*:after,
+* {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.hour {
+  height: 60px;
+  border-top: 1px solid silver;
+}
+
+.half_hour {
+  height: 60px;
+}
+/*# sourceMappingURL=style.css.map */
