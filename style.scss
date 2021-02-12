@@ -12,3 +12,12 @@
 .half_hour {
   height: 60px;
 }
+#calendar_wrapper {
+  position: relative;
+}
+
+.activity {
+  position: absolute;
+  border-left: 1px solid #6e9ecf;
+  background-color: #e2ecf5;
+}
