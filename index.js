@@ -59,10 +59,14 @@ class TimeTable {
     if (!localStorage.activities) {
       this.activities = [];
       arrOfActivities.forEach((activity) => {
-        activity.start += this.config.dayStart * 60;
-        activity.id = this.activities.length + 1;
-        activity.end = activity.duration + activity.start;
-        this.activities.push(activity);
+        const newActivity = {};
+        newActivity.title = activity.title;
+        newActivity.start = activity.start + this.config.dayStart * 60;
+        newActivity.duration = activity.duration;
+        newActivity.end = activity.duration + newActivity.start;
+        newActivity.color = "rgba(110, 158, 207, 1)";
+        newActivity.id = this.activities.length + 1;
+        this.activities.push(newActivity);
       });
     } else {
       this.activities = JSON.parse(localStorage.activities);
@@ -70,28 +74,52 @@ class TimeTable {
   }
 
   // Добавляем новое событие
-  addActivity(title, start, end, color) {
-    if (start < this.config.dayStart) {
+  setActivity(title, start, end, color, id) {
+    if (end <= start) {
+      alert("Input end of the activity value after the start!!!");
+      return false;
+    } else if (start < this.config.dayStart * 60) {
       alert("Input start of the activity value after the start of the day!!!");
       return false;
-    }
-    if (end > this.config.dayStart) {
+    } else if (start > this.config.dayEnd * 60) {
+      alert("Input start of the activity value before the end of the day!!!");
+      return false;
+    } else if (end > this.config.dayEnd * 60) {
       alert("Input end of the activity value before the end of the day!!!");
+      return false;
+    } else if (end < this.config.dayStart * 60) {
+      alert("Input end of the activity value after the start of the day!!!");
+      return false;
+    } else if (!title || !start || !end) {
+      alert("Input all nedeed values!!!");
+      return false;
+    } else if (this.activities.filter((e) => e.start === start).length && !id) {
+      alert("Already have an activity at this time!!!");
       return false;
     }
 
     const activity = {
+      title: title,
       start: start,
       duration: end - start,
-      title: title,
       end: end,
-      id: this.activities.length + 1,
       color: color,
+      id: id || this.activities.length + 1,
     };
+
+    if (this.activities.filter((e) => e.id === activity.id).length) {
+      this.activities.forEach((item, index, arr) => {
+        if (item.id === activity.id) {
+          arr.splice(index, 1);
+        }
+      });
+    }
     this.activities.push(activity);
+
     renderActivity(this);
 
     localStorage.activities = JSON.stringify(this.activities);
+    return "success";
   }
 
   changeDaydayLongevity(start = 8, end = 17) {
@@ -125,6 +153,7 @@ const renderActivity = (scheduleForRender) => {
   });
   for (let activity of activitiesForRender) {
     activity.column = !activity.column ? 0 : activity.column;
+
     for (let activityForCompare of activitiesForRender) {
       if (
         // раннее событие пересекается с текущим
@@ -143,6 +172,7 @@ const renderActivity = (scheduleForRender) => {
         activityForCompare.column = activity.column === 2 ? 1 : 2;
       }
     }
+    //Создаем див нашего события со свойствами и стилями
     const activityBlock = cElem("div", "activity", activity.title);
     if (activity.column === 0) {
       activityBlock.style.width = "200px";
@@ -161,13 +191,17 @@ const renderActivity = (scheduleForRender) => {
       (activity.start - scheduleForRender.config.dayStart * 60) * 2
     }px`;
     activityBlock.style.height = `${activity.duration * 2}px`;
-    activityBlock.id = activity.id;
+    activityBlock.style.borderLeft = `3px solid ${activity.color}`;
+    const backgroundColor = activity.color.split(" ");
+    backgroundColor.splice(3, 1, "0.2)");
+    activityBlock.style.background = backgroundColor.join(" ");
+    activityBlock.id = `activity_${activity.id}`;
     gElem("#activities_container").add(activityBlock);
   }
 };
 
-const schedule = new TimeTable(activitiesTemplate);
-
+//Запускаем приложение
+let schedule = new TimeTable([...activitiesTemplate]);
 renderActivity(schedule);
 
 //Заполнение полей времени дня
@@ -187,7 +221,6 @@ window.addEventListener("DOMContentLoaded", () => {
 //Изменение продолжительности дня
 gElem("#day_longevity").addEventListener("submit", (e) => {
   e.preventDefault();
-  console.log(e.target.dayStart.valueAsNumber);
   schedule.changeDaydayLongevity(
     e.target.dayStart.valueAsNumber / 1000 / 60 / 60,
     e.target.dayEnd.valueAsNumber / 1000 / 60 / 60
@@ -221,8 +254,8 @@ gElem("#show").addEventListener("click", (e) => {
   }
 });
 
-//Выбор цвета события
-let colorWheel = new iro.ColorPicker("#colorWheel", {
+//Колесо выбора цвета события
+const colorWheel = new iro.ColorPicker("#colorWheel", {
   layout: [
     {
       component: iro.ui.Wheel,
@@ -237,21 +270,87 @@ let colorWheel = new iro.ColorPicker("#colorWheel", {
       options: { sliderType: "value" },
     },
   ],
-  color: "#6e9ecf",
+  color: "rgba(110, 158, 207, 1)",
   handleRadius: 15,
-  width: 240,
+  width: 0,
   display: "block",
 });
 
-const myColor = colorWheel.color;
-console.log(myColor.rgba);
-
-// colorWheel.on("input:end", function (color, changes) {
-//   // when the color has changed, the callback gets passed the color object and an object providing which color channels (out of H, S, V) have changed.
-//   console.log(color.rgbString);
-// });
-
-// colorWheel.resize(0);
-// gElem("#colorWheel").style.height = "0";
+//Открываем панель с добавлением нового события
+gElem("#btn_add").addEventListener("click", (e) => {
+  e.preventDefault();
+  if (e.target.value === "false") {
+    gElem("#activity_parameters").style.display = "flex";
+    e.target.value = "true";
+  } else {
+    gElem("#activity_parameters").style.display = "none";
+    e.target.value = "false";
+  }
+});
 
 // schedule.addActivity("tmplate", 16 * 60, 40);
+
+//Работаем с цветом на окошке нового события
+gElem("#color_picker").addEventListener("click", (e) => {
+  e.preventDefault();
+  if (!e.target.value || e.target.value === "disabled") {
+    colorWheel.resize(240);
+    gElem("#activity_parameters_main").style.height = "300px";
+    gElem("#colorWheel").style.height = "200px";
+    e.target.value = "enabled";
+  } else {
+    e.target.value = "disabled";
+    colorWheel.resize(0);
+    gElem("#activity_parameters_main").style.height = "0";
+    gElem("#colorWheel").style.height = "0";
+  }
+});
+
+colorWheel.on("input:change", function (color) {
+  gElem("#color_picker").style.backgroundColor = color.rgbaString;
+});
+colorWheel.on("color:init", function (color) {
+  gElem("#color_picker").style.backgroundColor = color.rgbaString;
+});
+
+//Добавляем новое событие
+gElem("#add_activity").addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (
+    schedule.setActivity(
+      e.target.activity_title.value,
+      e.target.activityStart.valueAsNumber / 1000 / 60,
+      e.target.activityEnd.valueAsNumber / 1000 / 60,
+      colorWheel.color.rgbaString
+    ) === "success"
+  ) {
+    gElem("#activity_parameters").style.display = "none";
+    gElem("#btn_add").value = "false";
+  }
+});
+gElem("#add_activity").addEventListener("reset", (e) => {
+  e.preventDefault();
+  gElem("#add_activity").activity_title.value = "";
+  gElem("#add_activity").activityStart.value = "";
+  gElem("#add_activity").activityEnd.value = "";
+  colorWheel.reset();
+  gElem("#color_picker").style.backgroundColor = colorWheel.color.rgbaString;
+});
+
+//Очищаем локал сторадж событий
+gElem("#btn_clear").addEventListener("click", (e) => {
+  e.preventDefault();
+  localStorage.removeItem("activities");
+  gElem("#add_activity").activity_title.value = "";
+  gElem("#add_activity").activityStart.value = "";
+  gElem("#add_activity").activityEnd.value = "";
+  colorWheel.reset();
+  gElem("#color_picker").style.backgroundColor = colorWheel.color.rgbaString;
+
+  schedule = "";
+  schedule.activities;
+  schedule = new TimeTable([...activitiesTemplate]);
+  renderActivity(schedule);
+});
+
+// schedule.setActivity("sfsf", 580, 595, "rgba(10, 158, 207, 1)", 5);
