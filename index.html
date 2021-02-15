@@ -43,13 +43,23 @@
             <div class="wheel" id="colorWheel"></div>
             <p>
               Start
-              <input type="time" name="activityStart" step="60" />
+              <input
+                id="activityStart"
+                type="time"
+                name="activityStart"
+                step="60"
+              />
               End
-              <input type="time" name="activityEnd" step="60" />
+              <input
+                id="activityEnd"
+                type="time"
+                name="activityEnd"
+                step="60"
+              />
             </p>
             <button id="btn_clear" type="clear">Clear All</button>
-            <button type="reset">Reset</button>
-            <button type="submit">Apply</button>
+            <button id="btn_reset" type="reset">Reset</button>
+            <button id="apply_act" type="submit">Apply</button>
           </div>
           <div id="color">
             <span>Color</span>

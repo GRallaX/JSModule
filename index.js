@@ -6,7 +6,12 @@ const cElem = (tagName, className, text) => {
 };
 
 const gElem = (param) => {
-  const elem = document.querySelector(param);
+  let elem = "";
+  if (param.substr(0, 1) === ".") {
+    elem = document.querySelectorAll(param);
+  } else {
+    elem = document.querySelector(param);
+  }
   elem.clear = function () {
     this.innerHTML = "";
     return this;
@@ -73,7 +78,7 @@ class TimeTable {
     }
   }
 
-  // Добавляем новое событие
+  // Добавляем/изменяем событие
   setActivity(title, start, end, color, id) {
     if (end <= start) {
       alert("Input end of the activity value after the start!!!");
@@ -117,11 +122,12 @@ class TimeTable {
     this.activities.push(activity);
 
     renderActivity(this);
+    addClickOnAct();
 
     localStorage.activities = JSON.stringify(this.activities);
     return "success";
   }
-
+  //Метод изменения продолжительности дня
   changeDaydayLongevity(start = 8, end = 17) {
     if (start < this.config.dayEnd) {
       this.config.dayStart = start;
@@ -136,12 +142,14 @@ class TimeTable {
       return false;
     }
     renderActivity(this);
+    addClickOnAct();
 
     localStorage.config = JSON.stringify(this.config);
     localStorage.activities = JSON.stringify(this.activities);
   }
 }
 
+//Функция отрисовки событий
 const renderActivity = (scheduleForRender) => {
   calendarWallpaper(
     scheduleForRender.config.dayStart,
@@ -225,6 +233,8 @@ gElem("#day_longevity").addEventListener("submit", (e) => {
     e.target.dayStart.valueAsNumber / 1000 / 60 / 60,
     e.target.dayEnd.valueAsNumber / 1000 / 60 / 60
   );
+  gElem("#show").value = "false";
+  gElem("#changing_day").style.display = "none";
 });
 gElem("#day_longevity").addEventListener("reset", (e) => {
   e.preventDefault();
@@ -240,6 +250,8 @@ gElem("#day_longevity").addEventListener("reset", (e) => {
       ? "0" + schedule.config.dayEnd
       : schedule.config.dayEnd
   }:00`;
+  gElem("#show").value = "false";
+  gElem("#changing_day").style.display = "none";
 });
 
 //Демонтсрация/скрытие панели редактирования времени дня
@@ -277,31 +289,36 @@ const colorWheel = new iro.ColorPicker("#colorWheel", {
 });
 
 //Открываем панель с добавлением нового события
+const openElemParams = () => {
+  gElem("#activity_parameters").style.display = "flex";
+  gElem("#btn_add").value = "true";
+};
+const closeElemParams = () => {
+  gElem("#activity_parameters").style.display = "none";
+  gElem("#btn_add").value = "false";
+};
+
 gElem("#btn_add").addEventListener("click", (e) => {
   e.preventDefault();
   if (e.target.value === "false") {
-    gElem("#activity_parameters").style.display = "flex";
-    e.target.value = "true";
+    openElemParams();
   } else {
-    gElem("#activity_parameters").style.display = "none";
-    e.target.value = "false";
+    closeElemParams();
   }
 });
-
-// schedule.addActivity("tmplate", 16 * 60, 40);
 
 //Работаем с цветом на окошке нового события
 gElem("#color_picker").addEventListener("click", (e) => {
   e.preventDefault();
   if (!e.target.value || e.target.value === "disabled") {
-    colorWheel.resize(240);
     gElem("#activity_parameters_main").style.height = "300px";
     gElem("#colorWheel").style.height = "200px";
+    colorWheel.resize(240);
     e.target.value = "enabled";
   } else {
     e.target.value = "disabled";
     colorWheel.resize(0);
-    gElem("#activity_parameters_main").style.height = "0";
+    gElem("#activity_parameters_main").style.height = "unset";
     gElem("#colorWheel").style.height = "0";
   }
 });
@@ -313,8 +330,17 @@ colorWheel.on("color:init", function (color) {
   gElem("#color_picker").style.backgroundColor = color.rgbaString;
 });
 
+//Очищаем поля формы
+const clearParams = () => {
+  gElem("#add_activity").activity_title.value = "";
+  gElem("#add_activity").activityStart.value = "";
+  gElem("#add_activity").activityEnd.value = "";
+  colorWheel.reset();
+  gElem("#color_picker").style.backgroundColor = colorWheel.color.rgbaString;
+};
+
 //Добавляем новое событие
-gElem("#add_activity").addEventListener("submit", (e) => {
+const submitNewActivity = (e) => {
   e.preventDefault();
   if (
     schedule.setActivity(
@@ -324,33 +350,145 @@ gElem("#add_activity").addEventListener("submit", (e) => {
       colorWheel.color.rgbaString
     ) === "success"
   ) {
-    gElem("#activity_parameters").style.display = "none";
-    gElem("#btn_add").value = "false";
+    closeElemParams();
+    clearParams();
   }
-});
+};
+gElem("#add_activity").addEventListener("submit", submitNewActivity);
 gElem("#add_activity").addEventListener("reset", (e) => {
   e.preventDefault();
-  gElem("#add_activity").activity_title.value = "";
-  gElem("#add_activity").activityStart.value = "";
-  gElem("#add_activity").activityEnd.value = "";
-  colorWheel.reset();
-  gElem("#color_picker").style.backgroundColor = colorWheel.color.rgbaString;
+  clearParams();
 });
 
 //Очищаем локал сторадж событий
-gElem("#btn_clear").addEventListener("click", (e) => {
-  e.preventDefault();
-  localStorage.removeItem("activities");
-  gElem("#add_activity").activity_title.value = "";
-  gElem("#add_activity").activityStart.value = "";
-  gElem("#add_activity").activityEnd.value = "";
-  colorWheel.reset();
-  gElem("#color_picker").style.backgroundColor = colorWheel.color.rgbaString;
+const clearAllBtn = () => {
+  gElem("#btn_clear").addEventListener(
+    "click",
+    (clearAll = (e) => {
+      e.preventDefault();
+      localStorage.removeItem("activities");
+      clearParams();
+      schedule = "";
+      schedule.activities;
+      schedule = new TimeTable([...activitiesTemplate]);
+      renderActivity(schedule);
+      addClickOnAct();
+      closeElemParams();
+    })
+  );
+};
+clearAllBtn();
 
-  schedule = "";
-  schedule.activities;
-  schedule = new TimeTable([...activitiesTemplate]);
-  renderActivity(schedule);
+//Изменяем уже существующее событие
+let counterAddClick = 0;
+const addClickOnAct = () => {
+  gElem(".activity").forEach((item) => {
+    item.addEventListener("click", (e) => {
+      const id = e.target.id.split("activity_").join("");
+      const actArr = schedule.activities.filter((act) => act.id == id);
+      const act = actArr[0];
+      openElemParams();
+      gElem("#add_activity").activity_title.value = act.title;
+      gElem("#add_activity").activityStart.valueAsNumber =
+        act.start * 60 * 1000;
+      gElem("#add_activity").activityEnd.valueAsNumber = act.end * 60 * 1000;
+      colorWheel.color.set(act.color);
+      gElem("#color_picker").style.backgroundColor =
+        colorWheel.color.rgbaString;
+
+      // Взаимодействуем с кнопкой отправки
+      if (counterAddClick) {
+        gElem("#apply_act").removeEventListener("click", changeActivity);
+      }
+      counterAddClick++;
+      gElem("#apply_act").innerHTML = "Change";
+      gElem("#apply_act").addEventListener(
+        "click",
+        (changeActivity = (e) => {
+          e.preventDefault();
+          if (
+            schedule.setActivity(
+              gElem("#add_activity").activity_title.value,
+              gElem("#add_activity").activityStart.valueAsNumber / 1000 / 60,
+              gElem("#add_activity").activityEnd.valueAsNumber / 1000 / 60,
+              colorWheel.color.rgbaString,
+              act.id
+            ) === "success"
+          ) {
+            counterAddClick = 0;
+            e.target.removeEventListener("click", changeActivity);
+            gElem("#btn_reset").removeEventListener("click", resetChangeAct);
+            gElem("#btn_clear").removeEventListener("click", clearAllChange);
+            e.target.innerHTML = "Apply";
+            gElem("#btn_reset").innerHTML = "Reset";
+            closeElemParams();
+            clearParams();
+          }
+        })
+      );
+
+      //Взаимодействуем с кнопкой сброса
+      gElem("#btn_reset").innerHTML = "Cancel";
+      gElem("#btn_reset").addEventListener(
+        "click",
+        (resetChangeAct = (e) => {
+          e.preventDefault();
+          clearParams();
+          closeElemParams();
+          counterAddClick = 0;
+          gElem("#apply_act").removeEventListener("click", changeActivity);
+          gElem("#btn_clear").removeEventListener("click", clearAllChange);
+          e.target.removeEventListener("click", resetChangeAct);
+          gElem("#apply_act").innerHTML = "Apply";
+          e.target.innerHTML = "Reset";
+        })
+      );
+      // Взаимодействуем с кнопкой ClearAll
+      gElem("#btn_clear").addEventListener(
+        "click",
+        (clearAllChange = (e) => {
+          counterAddClick = 0;
+          gElem("#apply_act").removeEventListener("click", changeActivity);
+          gElem("#btn_reset").removeEventListener("click", resetChangeAct);
+          gElem("#apply_act").innerHTML = "Apply";
+          gElem("#btn_reset").innerHTML = "Reset";
+          e.target.removeEventListener("click", clearAllChange);
+        })
+      );
+    });
+  });
+};
+
+addClickOnAct();
+
+//Помогаем вводить время активности (+15мин)
+gElem("#activityStart").addEventListener("change", (e) => {
+  if (
+    !gElem("#activityEnd").value ||
+    gElem("#activityEnd").valueAsNumber <= gElem("#activityStart").valueAsNumber
+  ) {
+    gElem("#activityEnd").valueAsNumber =
+      e.target.valueAsNumber + 15 * 60 * 1000;
+  }
+});
+gElem("#activityEnd").addEventListener("change", (e) => {
+  if (
+    !gElem("#activityStart").value ||
+    gElem("#activityEnd").valueAsNumber <= gElem("#activityStart").valueAsNumber
+  ) {
+    gElem("#activityStart").valueAsNumber =
+      e.target.valueAsNumber - 15 * 60 * 1000;
+  }
 });
 
-// schedule.setActivity("sfsf", 580, 595, "rgba(10, 158, 207, 1)", 5);
+// const timer = (timeEnd) => {
+//   return (
+//     timeEnd * 60 * 1000 -
+//     new Date().getHours() * 60 * 60 * 1000 +
+//     new Date().getMinutes() * 60 * 1000 +
+//     new Date().getSeconds() * 1000
+//   );
+// };
+// schedule.activities.map((item) => {
+//   console.log(timer(item.end) / 1000 / 60);
+// });

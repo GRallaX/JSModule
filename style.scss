@@ -20,7 +20,7 @@ header {
   top: 0;
   width: 100vw;
   position: fixed;
-  height: 200px;
+  height: 205px;
   z-index: 97;
 
   background-color: white;
@@ -28,7 +28,7 @@ header {
 }
 
 #calendar_wrapper {
-  top: 190px;
+  top: 196px;
   position: relative;
 }
 
@@ -102,7 +102,7 @@ header {
 
 #add_activity {
   position: relative;
-  padding: 10px 50px 20px;
+  padding: 10px 50px 0;
   text-align: left;
 
   h3 {
@@ -129,6 +129,7 @@ header {
     padding: 15px;
     position: absolute;
     display: none;
+    justify-content: center;
 
     z-index: 98;
     top: 0;
@@ -139,14 +140,18 @@ header {
     border: 2px solid rgb(165, 165, 165);
     border-radius: 8px;
 
+    @media (max-width: 600px) {
+      top: 90px;
+      left: 15px;
+    }
+
     #btn_clear {
       margin-right: 0;
     }
 
     &_main {
       position: relative;
-      // height: 300px;
-      padding: 0 20px 0 0;
+      padding: 0 40px 0 0;
       text-align: right;
 
       p {
@@ -157,7 +162,7 @@ header {
       #colorWheel {
         position: absolute;
         top: 0;
-        left: 0;
+        left: -28px;
         width: 280px;
         height: 0;
 
