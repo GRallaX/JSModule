@@ -380,8 +380,9 @@ const clearAllBtn = () => {
 clearAllBtn();
 
 //Изменяем уже существующее событие
-let counterAddClick = 0;
+
 const addClickOnAct = () => {
+  let counterAddClick = 0;
   gElem(".activity").forEach((item) => {
     item.addEventListener("click", (e) => {
       const id = e.target.id.split("activity_").join("");
