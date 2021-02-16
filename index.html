@@ -30,17 +30,16 @@
       <form id="add_activity" name="add_activity">
         <h3>Add activity</h3>
         <button id="btn_add" value="false">Add</button>
-        <p>
-          <input
-            type="text"
-            name="activity_title"
-            id="activity_title"
-            placeholder="Add activity title..."
-          />
-        </p>
         <div id="activity_parameters">
           <div id="activity_parameters_main">
-            <div class="wheel" id="colorWheel"></div>
+            <p>
+              Title<input
+                type="text"
+                name="activity_title"
+                id="activity_title"
+                placeholder="Add activity title..."
+              />
+            </p>
             <p>
               Start
               <input
@@ -60,6 +59,7 @@
             <button id="btn_clear" type="clear">Clear All</button>
             <button id="btn_reset" type="reset">Reset</button>
             <button id="apply_act" type="submit">Apply</button>
+            <div class="wheel" id="colorWheel"></div>
           </div>
           <div id="color">
             <span>Color</span>

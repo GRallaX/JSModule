@@ -6,6 +6,7 @@
 }
 
 body {
+  position: relative;
   font-family: "Open Sans";
   font-size: 14px;
 }
@@ -20,14 +21,14 @@ header {
   top: 0;
   width: 100vw;
   position: fixed;
-  height: 205px;
-  z-index: 97;
+  height: 170px;
+  z-index: 96;
   background-color: white;
   border-bottom: 2px solid #a5a5a5;
 }
 
 #calendar_wrapper {
-  top: 196px;
+  top: 161px;
   position: relative;
 }
 
@@ -115,11 +116,6 @@ header {
   font-weight: 600;
 }
 
-#add_activity #activity_title {
-  width: 230px;
-  height: 2rem;
-}
-
 #add_activity #activity_parameters {
   padding: 15px;
   position: absolute;
@@ -143,14 +139,24 @@ header {
   }
 }
 
+#add_activity #activity_parameters p {
+  text-align: left;
+}
+
+#add_activity #activity_parameters #activity_title {
+  margin: 0 0 0 5px;
+  width: 228px;
+  height: 2rem;
+}
+
 #add_activity #activity_parameters #btn_clear {
-  margin-right: 0;
+  margin: 0 0 0 43px;
 }
 
 #add_activity #activity_parameters_main {
   position: relative;
-  padding: 0 40px 0 0;
-  text-align: right;
+  padding: 0 20px 0 0;
+  text-align: left;
 }
 
 #add_activity #activity_parameters_main p {
@@ -162,7 +168,7 @@ header {
   position: absolute;
   top: 0;
   left: 0;
-  width: 250px;
+  width: 265px;
   height: 0;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -184,6 +190,11 @@ header {
   border-radius: 8px;
 }
 
+#add_activity #activity_parameters #color #color_picker:hover {
+  white-space: normal;
+  cursor: pointer;
+}
+
 #calendar_wrapper {
   position: relative;
   overflow: hidden;
@@ -196,8 +207,24 @@ header {
   overflow: hidden;
 }
 
-.activity :hover {
-  white-space: wrap;
+.activity:hover {
+  white-space: normal;
   cursor: pointer;
+  overflow: visible;
+  z-index: 2;
+}
+
+#activities_container:hover > .activity:not(:hover) {
+  opacity: 0.33;
+}
+
+.modalBckgr {
+  position: fixed;
+  z-index: 96;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.103);
 }
 /*# sourceMappingURL=style.css.map */

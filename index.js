@@ -315,11 +315,24 @@ gElem("#color_picker").addEventListener("click", (e) => {
     gElem("#colorWheel").style.height = "200px";
     colorWheel.resize(240);
     e.target.value = "enabled";
+    const modalBackgr = cElem("div", "modalBckgr");
+    modalBackgr.addEventListener(
+      "click",
+      (clickToClose = (e) => {
+        gElem("#color_picker").value = "disabled";
+        colorWheel.resize(0);
+        gElem("#activity_parameters_main").style.height = "unset";
+        gElem("#colorWheel").style.height = "0";
+        e.target.parentNode.removeChild(e.target);
+      })
+    );
+    gElem("header").add(modalBackgr);
   } else {
+    gElem(".modalBckgr").forEach((item) => item.parentNode.removeChild(item));
     e.target.value = "disabled";
     colorWheel.resize(0);
-    gElem("#activity_parameters_main").style.height = "unset";
     gElem("#colorWheel").style.height = "0";
+    gElem("#activity_parameters_main").style.height = "unset";
   }
 });
 
