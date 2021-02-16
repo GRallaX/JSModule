@@ -74,7 +74,7 @@ header {
 @media (max-width: 600px) {
   #day_longevity #changing_day {
     left: 50px;
-    top: 60px;
+    top: 30px;
     width: 232px;
     text-align: center;
   }
@@ -134,7 +134,7 @@ header {
 
 @media (max-width: 600px) {
   #add_activity #activity_parameters {
-    top: 90px;
+    top: 50px;
     left: 15px;
   }
 }
