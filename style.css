@@ -161,8 +161,8 @@ header {
 #add_activity #activity_parameters_main #colorWheel {
   position: absolute;
   top: 0;
-  left: -28px;
-  width: 280px;
+  left: 0;
+  width: 250px;
   height: 0;
   display: -webkit-box;
   display: -ms-flexbox;
