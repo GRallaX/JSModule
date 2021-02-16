@@ -195,4 +195,9 @@ header {
   white-space: nowrap;
   overflow: hidden;
 }
+
+.activity :hover {
+  white-space: wrap;
+  cursor: pointer;
+}
 /*# sourceMappingURL=style.css.map */

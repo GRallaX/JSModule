@@ -197,4 +197,9 @@ header {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+
+  :hover {
+    white-space: wrap;
+    cursor: pointer;
+  }
 }
