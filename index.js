@@ -571,7 +571,6 @@ const addClickOnAct = () => {
             gElem("#btn_clear").removeEventListener("click", deleteActivity);
           gElem("#btn_clear").addEventListener("click", clearAll);
           gElem("#btn_clear").innerHTML = "Clear all";
-          gElem("#add_activity").removeEventListener(submitChangeAct);
           gElem("#add_activity").addEventListener(
             "keypress",
             pressEnterToSubmit
@@ -600,6 +599,7 @@ const addClickOnAct = () => {
           renderActivity(schedule);
           addClickOnAct();
           closeElemParams();
+          clearParams();
           localStorage.activities = JSON.stringify(schedule.activities);
           counterAddClick = 0;
           gElem("#apply_act").removeEventListener("click", changeActivity);
@@ -610,11 +610,12 @@ const addClickOnAct = () => {
             "keypress",
             submitChangeAct
           );
+          e.target.innerHTML = "Clear all";
+
           gElem("#add_activity").addEventListener(
             "keypress",
             pressEnterToSubmit
           );
-          e.target.innerHTML = "Clear all";
           e.target.removeEventListener("click", deleteActivity);
           e.target.addEventListener("click", clearAll);
         })
@@ -626,7 +627,6 @@ const addClickOnAct = () => {
           "keypress",
           pressEnterToSubmit
         );
-        gElem("#add_activity").removeEventListener("submit", submitNewActivity);
       } else {
         gElem("#add_activity").removeEventListener("keypress", submitChangeAct);
       }
