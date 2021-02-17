@@ -66,11 +66,12 @@ class TimeTable {
       arrOfActivities.forEach((activity) => {
         const newActivity = {};
         newActivity.title = activity.title;
-        newActivity.start = activity.start + this.config.dayStart * 60;
+        newActivity.start = activity.start + 8 * 60;
         newActivity.duration = activity.duration;
         newActivity.end = activity.duration + newActivity.start;
         newActivity.color = "rgba(110, 158, 207, 1)";
         newActivity.id = this.activities.length + 1;
+        newActivity.timer = false;
         this.activities.push(newActivity);
       });
     } else {
@@ -79,7 +80,7 @@ class TimeTable {
   }
 
   // Добавляем/изменяем событие
-  setActivity(title, start, end, color, id) {
+  setActivity(title, start, end, color, id, timer) {
     if (end <= start) {
       alert("Input end of the activity value after the start!!!");
       return false;
@@ -110,6 +111,7 @@ class TimeTable {
       end: end,
       color: color,
       id: id || this.activities.length + 1,
+      timer: timer || false,
     };
 
     if (this.activities.filter((e) => e.id === activity.id).length) {
@@ -180,6 +182,7 @@ const renderActivity = (scheduleForRender) => {
         activityForCompare.column = activity.column === 2 ? 1 : 2;
       }
     }
+
     //Создаем див нашего события со свойствами и стилями
     const activityBlock = cElem("div", "activity", activity.title);
     if (activity.column === 0) {
@@ -204,6 +207,90 @@ const renderActivity = (scheduleForRender) => {
     backgroundColor.splice(3, 1, "0.2)");
     activityBlock.style.background = backgroundColor.join(" ");
     activityBlock.id = `activity_${activity.id}`;
+
+    //Проверка на наличие таймера и его создание при необхомости
+
+    //Функция рендеринга уведомления
+    const timeNow =
+      new Date().getHours() * 60 * 60 +
+      new Date().getMinutes() * 60 +
+      new Date().getSeconds();
+
+    const setNotific = (
+      title = activity.title,
+      start = activity.start,
+      end = activity.end
+    ) => {
+      console.log(
+        "Timer func works",
+        +new Date().getHours() + " : " + new Date().getMinutes()
+      );
+      console.log("Activity: " + title);
+      activity.timer = false;
+      localStorage.activities = JSON.stringify(scheduleForRender.activities);
+
+      let notifWindowClass = "notification_1";
+      if (gElem(".notification_1").length && !gElem(".notification_2").length) {
+        notifWindowClass = "notification_2";
+      } else if (gElem(".notification_2").length) {
+        notifWindowClass = "notification_3";
+      }
+
+      //СОздаем наше уведомление
+      const notifContainer = cElem("div", notifWindowClass);
+      const notifTitle = cElem("h3", "", title);
+      const p = cElem("p", "", "has started");
+      const notifStart = cElem("input");
+      const notifEnd = cElem("input");
+      notifStart.setAttribute("type", "time");
+      notifEnd.setAttribute("type", "time");
+      notifStart.disabled = true;
+      notifEnd.disabled = true;
+      notifStart.valueAsNumber = start * 60 * 1000;
+      notifEnd.valueAsNumber = end * 60 * 1000;
+      notifContainer.append(notifTitle, p, notifStart, " — ", notifEnd);
+      setTimeout(() => {
+        notifContainer.remove();
+      }, (end * 60 - timeNow) * 1000);
+      backgroundColor.splice(3, 1, "0.85)");
+      notifContainer.style.background = backgroundColor.join(" ");
+      notifContainer.addEventListener("click", (e) => {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+      });
+      gElem("#activities_container").add(notifContainer);
+    };
+
+    //Функция запуска рендеринга уведомления с таймером и переменной с ID таймаута
+    let timeoutID;
+    const notifEnabler = () => {
+      timeoutID = setTimeout(
+        setNotific,
+        (activity.start * 60 - timeNow) * 1000
+      );
+    };
+
+    //Работаем с конфигом таймера в объекте
+    if (activity.end * 60 > timeNow) {
+      if (!activity.timer) {
+        notifEnabler();
+        activity.timer = timeoutID;
+        console.log("Timer enabled", "TimerID: " + timeoutID);
+      } else {
+        clearTimeout(activity.timer);
+        notifEnabler();
+        activity.timer = timeoutID;
+        console.log("Timer enabled", "TimerID: " + timeoutID);
+      }
+    } else {
+      if (activity.timer) {
+        clearTimeout(activity.timer);
+        console.log("Timer disabled", "TimerID: " + activity.timer);
+        activity.timer = false;
+        localStorage.activities = JSON.stringify(scheduleForRender.activities);
+      }
+    }
+
     gElem("#activities_container").add(activityBlock);
   }
 };
@@ -426,7 +513,8 @@ const addClickOnAct = () => {
               gElem("#add_activity").activityStart.valueAsNumber / 1000 / 60,
               gElem("#add_activity").activityEnd.valueAsNumber / 1000 / 60,
               colorWheel.color.rgbaString,
-              act.id
+              act.id,
+              act.timer
             ) === "success"
           ) {
             counterAddClick = 0;
@@ -494,15 +582,3 @@ gElem("#activityEnd").addEventListener("change", (e) => {
       e.target.valueAsNumber - 15 * 60 * 1000;
   }
 });
-
-// const timer = (timeEnd) => {
-//   return (
-//     timeEnd * 60 * 1000 -
-//     new Date().getHours() * 60 * 60 * 1000 +
-//     new Date().getMinutes() * 60 * 1000 +
-//     new Date().getSeconds() * 1000
-//   );
-// };
-// schedule.activities.map((item) => {
-//   console.log(timer(item.end) / 1000 / 60);
-// });
