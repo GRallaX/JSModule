@@ -122,11 +122,11 @@ class TimeTable {
       });
     }
     this.activities.push(activity);
+    localStorage.activities = JSON.stringify(this.activities);
 
     renderActivity(this);
     addClickOnAct();
 
-    localStorage.activities = JSON.stringify(this.activities);
     return "success";
   }
   //Метод изменения продолжительности дня
@@ -143,11 +143,11 @@ class TimeTable {
       alert("Input end of the day value after start!!!");
       return false;
     }
-    renderActivity(this);
-    addClickOnAct();
 
     localStorage.config = JSON.stringify(this.config);
     localStorage.activities = JSON.stringify(this.activities);
+    renderActivity(this);
+    addClickOnAct();
   }
 }
 
@@ -203,6 +203,7 @@ const renderActivity = (scheduleForRender) => {
     }px`;
     activityBlock.style.height = `${activity.duration * 2}px`;
     activityBlock.style.borderLeft = `3px solid ${activity.color}`;
+    activityBlock.style.borderTop = `3px solid ${activity.color}`;
     const backgroundColor = activity.color.split(" ");
     backgroundColor.splice(3, 1, "0.2)");
     activityBlock.style.background = backgroundColor.join(" ");
@@ -444,9 +445,9 @@ const submitNewActivity = (e) => {
   e.preventDefault();
   if (
     schedule.setActivity(
-      e.target.activity_title.value,
-      e.target.activityStart.valueAsNumber / 1000 / 60,
-      e.target.activityEnd.valueAsNumber / 1000 / 60,
+      gElem("#add_activity").activity_title.value,
+      gElem("#add_activity").activityStart.valueAsNumber / 1000 / 60,
+      gElem("#add_activity").activityEnd.valueAsNumber / 1000 / 60,
       colorWheel.color.rgbaString
     ) === "success"
   ) {
@@ -454,7 +455,17 @@ const submitNewActivity = (e) => {
     clearParams();
   }
 };
+
+const pressEnterToSubmit = (e) => {
+  if (e.keyCode == 13) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    submitNewActivity(e);
+  }
+};
+
 gElem("#add_activity").addEventListener("submit", submitNewActivity);
+gElem("#add_activity").addEventListener("keypress", pressEnterToSubmit);
 gElem("#add_activity").addEventListener("reset", (e) => {
   e.preventDefault();
   clearParams();
@@ -501,7 +512,6 @@ const addClickOnAct = () => {
       if (counterAddClick) {
         gElem("#apply_act").removeEventListener("click", changeActivity);
       }
-      counterAddClick++;
       gElem("#apply_act").innerHTML = "Change";
       gElem("#apply_act").addEventListener(
         "click",
@@ -521,6 +531,14 @@ const addClickOnAct = () => {
             e.target.removeEventListener("click", changeActivity);
             gElem("#btn_reset").removeEventListener("click", resetChangeAct);
             gElem("#btn_clear").removeEventListener("click", clearAllChange);
+            gElem("#add_activity").removeEventListener(
+              "keypress",
+              submitChangeAct
+            );
+            gElem("#add_activity").addEventListener(
+              "keypress",
+              pressEnterToSubmit
+            );
             e.target.innerHTML = "Apply";
             gElem("#btn_reset").innerHTML = "Reset";
             closeElemParams();
@@ -540,6 +558,14 @@ const addClickOnAct = () => {
           counterAddClick = 0;
           gElem("#apply_act").removeEventListener("click", changeActivity);
           gElem("#btn_clear").removeEventListener("click", clearAllChange);
+          gElem("#add_activity").removeEventListener(
+            "keypress",
+            submitChangeAct
+          );
+          gElem("#add_activity").addEventListener(
+            "keypress",
+            pressEnterToSubmit
+          );
           e.target.removeEventListener("click", resetChangeAct);
           gElem("#apply_act").innerHTML = "Apply";
           e.target.innerHTML = "Reset";
@@ -554,7 +580,67 @@ const addClickOnAct = () => {
           gElem("#btn_reset").removeEventListener("click", resetChangeAct);
           gElem("#apply_act").innerHTML = "Apply";
           gElem("#btn_reset").innerHTML = "Reset";
+          gElem("#add_activity").removeEventListener(
+            "keypress",
+            submitChangeAct
+          );
+          gElem("#add_activity").addEventListener(
+            "keypress",
+            pressEnterToSubmit
+          );
           e.target.removeEventListener("click", clearAllChange);
+        })
+      );
+
+      //Взаимодействуем с сабмит формы
+      if (!counterAddClick) {
+        gElem("#add_activity").removeEventListener(
+          "keypress",
+          pressEnterToSubmit
+        );
+        gElem("#add_activity").removeEventListener("submit", submitNewActivity);
+      } else {
+        gElem("#add_activity").removeEventListener("keypress", submitChangeAct);
+      }
+      counterAddClick++;
+      gElem("#add_activity").addEventListener(
+        "keypress",
+        (submitChangeAct = (e) => {
+          if (e.keyCode == 13) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            if (
+              schedule.setActivity(
+                gElem("#add_activity").activity_title.value,
+                gElem("#add_activity").activityStart.valueAsNumber / 1000 / 60,
+                gElem("#add_activity").activityEnd.valueAsNumber / 1000 / 60,
+                colorWheel.color.rgbaString,
+                act.id,
+                act.timer
+              ) === "success"
+            ) {
+              counterAddClick = 0;
+              gElem("#apply_act").removeEventListener("click", changeActivity);
+              gElem("#btn_reset").removeEventListener("click", resetChangeAct);
+              gElem("#btn_clear").removeEventListener("click", clearAllChange);
+              gElem("#apply_act").innerHTML = "Apply";
+              gElem("#btn_reset").innerHTML = "Reset";
+              gElem("#add_activity").removeEventListener(
+                "keypress",
+                submitChangeAct
+              );
+              gElem("#add_activity").addEventListener(
+                "keypress",
+                pressEnterToSubmit
+              );
+              gElem("#add_activity").addEventListener(
+                "submit",
+                submitNewActivity
+              );
+              closeElemParams();
+              clearParams();
+            }
+          }
         })
       );
     });
