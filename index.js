@@ -593,6 +593,7 @@ const addClickOnAct = () => {
       gElem("#btn_clear").addEventListener(
         "click",
         (deleteActivity = (e) => {
+          e.preventDefault();
           schedule.activities = schedule.activities.filter(
             (item) => item.id != id
           );
