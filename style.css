@@ -63,7 +63,7 @@ header {
   display: none;
   top: 7px;
   left: 287px;
-  width: 369px;
+  width: 380px;
   -webkit-animation: fadein 0.7s;
           animation: fadein 0.7s;
   padding: 10px;
@@ -128,7 +128,7 @@ header {
   z-index: 98;
   top: 0;
   left: 287px;
-  width: 369px;
+  width: 380px;
   background: white;
   border: 2px solid #a5a5a5;
   border-radius: 8px;

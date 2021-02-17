@@ -99,9 +99,6 @@ class TimeTable {
     } else if (!title || !start || !end) {
       alert("Input all nedeed values!!!");
       return false;
-    } else if (this.activities.filter((e) => e.start === start).length && !id) {
-      alert("Already have an activity at this time!!!");
-      return false;
     }
 
     const activity = {
@@ -161,6 +158,8 @@ const renderActivity = (scheduleForRender) => {
   activitiesForRender = [...scheduleForRender.activities].sort((a1, a2) => {
     return a1.start - a2.start;
   });
+  activitiesForRender.forEach((item) => (item.column = 0));
+
   for (let activity of activitiesForRender) {
     activity.column = !activity.column ? 0 : activity.column;
 
@@ -483,21 +482,19 @@ gElem("#add_activity").addEventListener("reset", (e) => {
 });
 
 //Очищаем локал сторадж событий
+const clearAll = (e) => {
+  e.preventDefault();
+  localStorage.removeItem("activities");
+  clearParams();
+  schedule = "";
+  schedule.activities;
+  schedule = new TimeTable([...activitiesTemplate]);
+  renderActivity(schedule);
+  addClickOnAct();
+  closeElemParams();
+};
 const clearAllBtn = () => {
-  gElem("#btn_clear").addEventListener(
-    "click",
-    (clearAll = (e) => {
-      e.preventDefault();
-      localStorage.removeItem("activities");
-      clearParams();
-      schedule = "";
-      schedule.activities;
-      schedule = new TimeTable([...activitiesTemplate]);
-      renderActivity(schedule);
-      addClickOnAct();
-      closeElemParams();
-    })
-  );
+  gElem("#btn_clear").addEventListener("click", clearAll);
 };
 clearAllBtn();
 
@@ -539,9 +536,10 @@ const addClickOnAct = () => {
             ) === "success"
           ) {
             counterAddClick = 0;
-            e.target.removeEventListener("click", changeActivity);
             gElem("#btn_reset").removeEventListener("click", resetChangeAct);
-            gElem("#btn_clear").removeEventListener("click", clearAllChange);
+            gElem("#btn_clear").removeEventListener("click", deleteActivity);
+            gElem("#btn_clear").addEventListener("click", clearAll);
+            gElem("#btn_clear").innerHTML = "Clear all";
             gElem("#add_activity").removeEventListener(
               "keypress",
               submitChangeAct
@@ -550,10 +548,11 @@ const addClickOnAct = () => {
               "keypress",
               pressEnterToSubmit
             );
-            e.target.innerHTML = "Apply";
             gElem("#btn_reset").innerHTML = "Reset";
             closeElemParams();
             clearParams();
+            e.target.innerHTML = "Apply";
+            e.target.removeEventListener("click", changeActivity);
           }
         })
       );
@@ -568,11 +567,11 @@ const addClickOnAct = () => {
           closeElemParams();
           counterAddClick = 0;
           gElem("#apply_act").removeEventListener("click", changeActivity);
-          gElem("#btn_clear").removeEventListener("click", clearAllChange);
-          gElem("#add_activity").removeEventListener(
-            "keypress",
-            submitChangeAct
-          );
+          "keypress",
+            gElem("#btn_clear").removeEventListener("click", deleteActivity);
+          gElem("#btn_clear").addEventListener("click", clearAll);
+          gElem("#btn_clear").innerHTML = "Clear all";
+          gElem("#add_activity").removeEventListener(submitChangeAct);
           gElem("#add_activity").addEventListener(
             "keypress",
             pressEnterToSubmit
@@ -582,10 +581,25 @@ const addClickOnAct = () => {
           e.target.innerHTML = "Reset";
         })
       );
+
       // Взаимодействуем с кнопкой ClearAll
+      gElem("#btn_clear").innerHTML = "Delete";
+      if (!counterAddClick) {
+        gElem("#btn_clear").removeEventListener("click", clearAll);
+      } else {
+        gElem("#btn_clear").removeEventListener("click", deleteActivity);
+      }
+
       gElem("#btn_clear").addEventListener(
         "click",
-        (clearAllChange = (e) => {
+        (deleteActivity = (e) => {
+          schedule.activities = schedule.activities.filter(
+            (item) => item.id != id
+          );
+          renderActivity(schedule);
+          addClickOnAct();
+          closeElemParams();
+          localStorage.activities = JSON.stringify(schedule.activities);
           counterAddClick = 0;
           gElem("#apply_act").removeEventListener("click", changeActivity);
           gElem("#btn_reset").removeEventListener("click", resetChangeAct);
@@ -599,7 +613,9 @@ const addClickOnAct = () => {
             "keypress",
             pressEnterToSubmit
           );
-          e.target.removeEventListener("click", clearAllChange);
+          e.target.innerHTML = "Clear all";
+          e.target.removeEventListener("click", deleteActivity);
+          e.target.addEventListener("click", clearAll);
         })
       );
 
@@ -633,7 +649,9 @@ const addClickOnAct = () => {
               counterAddClick = 0;
               gElem("#apply_act").removeEventListener("click", changeActivity);
               gElem("#btn_reset").removeEventListener("click", resetChangeAct);
-              gElem("#btn_clear").removeEventListener("click", clearAllChange);
+              gElem("#btn_clear").removeEventListener("click", deleteActivity);
+              gElem("#btn_clear").addEventListener("click", clearAll);
+              gElem("#btn_clear").innerHTML = "Clear all";
               gElem("#apply_act").innerHTML = "Apply";
               gElem("#btn_reset").innerHTML = "Reset";
               gElem("#add_activity").removeEventListener(
