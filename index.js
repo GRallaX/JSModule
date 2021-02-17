@@ -663,10 +663,6 @@ const addClickOnAct = () => {
                 "keypress",
                 pressEnterToSubmit
               );
-              gElem("#add_activity").addEventListener(
-                "submit",
-                submitNewActivity
-              );
               closeElemParams();
               clearParams();
             }
