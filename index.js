@@ -180,6 +180,17 @@ const renderActivity = (scheduleForRender) => {
         activity.column =
           activity.column === 3 || activity.column === 2 ? activity.column : 1;
         activityForCompare.column = activity.column === 2 ? 1 : 2;
+      } else if (
+        activityForCompare.start === activity.start &&
+        activity.id !== activityForCompare.id
+      ) {
+        activity.column = activity.column === 0 ? 1 : activity.column;
+        activityForCompare.column =
+          activity.column === 1 ? 2 : activityForCompare.column;
+        activity.column =
+          activity.column === 2 && activityForCompare.column === 2
+            ? 3
+            : activity.column;
       }
     }
 
