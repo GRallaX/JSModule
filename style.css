@@ -10,7 +10,6 @@ body {
   font-family: "Open Sans";
   font-size: 14px;
 }
-
 body h2 {
   margin: 0;
   padding: 20px 50px 0;
@@ -38,18 +37,15 @@ header {
   padding: 20px 50px 10px;
   text-align: left;
 }
-
 #day_longevity p {
   margin: 0;
   display: inline-block;
 }
-
 #day_longevity h3 {
   display: inline-block;
   margin: 0;
   padding: 0 70px 0 0;
 }
-
 #day_longevity button {
   height: 25px;
   width: 70px;
@@ -57,22 +53,19 @@ header {
   font-size: 12px;
   font-weight: 600;
 }
-
 #day_longevity #changing_day {
   position: absolute;
   display: none;
   top: 7px;
   left: 287px;
   width: 380px;
-  -webkit-animation: fadein 0.7s;
-          animation: fadein 0.7s;
+  animation: fadein 0.7s;
   padding: 10px;
   background: white;
   border: 2px solid #a5a5a5;
   border-radius: 8px;
   z-index: 98;
 }
-
 @media (max-width: 600px) {
   #day_longevity #changing_day {
     left: 50px;
@@ -103,13 +96,11 @@ header {
   padding: 10px 50px 0;
   text-align: left;
 }
-
 #add_activity h3 {
   display: inline-block;
   margin: 0;
   padding: 0 60px 0 0;
 }
-
 #add_activity button {
   height: 25px;
   width: 70px;
@@ -117,14 +108,11 @@ header {
   font-size: 12px;
   font-weight: 600;
 }
-
 #add_activity #activity_parameters {
   padding: 15px;
   position: absolute;
   display: none;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  justify-content: center;
   z-index: 98;
   top: 0;
   left: 287px;
@@ -132,68 +120,53 @@ header {
   background: white;
   border: 2px solid #a5a5a5;
   border-radius: 8px;
-  -webkit-animation: fadein 0.7s;
-          animation: fadein 0.7s;
+  animation: fadein 0.7s;
 }
-
 @media (max-width: 600px) {
   #add_activity #activity_parameters {
     top: 50px;
     left: 15px;
   }
 }
-
 #add_activity #activity_parameters p {
   text-align: left;
 }
-
 #add_activity #activity_parameters #activity_title {
   margin: 0 0 0 5px;
   width: 228px;
   height: 2rem;
 }
-
 #add_activity #activity_parameters #btn_clear {
   margin: 0 0 0 43px;
 }
-
 #add_activity #activity_parameters_main {
   position: relative;
   padding: 0 20px 0 0;
   text-align: left;
 }
-
 #add_activity #activity_parameters_main p {
   margin: 0;
   padding: 0 0 20px 0;
 }
-
 #add_activity #activity_parameters_main #colorWheel {
   position: absolute;
   top: 0;
   left: 0;
   width: 265px;
   height: 0;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  justify-content: center;
   background-color: white;
 }
-
 #add_activity #activity_parameters #color {
   text-align: center;
 }
-
 #add_activity #activity_parameters #color #color_picker {
   height: 50px;
   width: 50px;
   border: 2px solid #a5a5a5;
   border-radius: 8px;
 }
-
 #add_activity #activity_parameters #color #color_picker:hover {
   white-space: normal;
   cursor: pointer;
@@ -209,17 +182,14 @@ header {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  -webkit-transition: 0.5s;
   transition: 0.5s;
 }
-
 .activity:hover {
   white-space: normal;
   cursor: pointer;
   overflow: visible;
   z-index: 2;
-  -webkit-transform: scale(1.1);
-          transform: scale(1.1);
+  transform: scale(1.1);
 }
 
 #activities_container:hover > .activity:not(:hover) {
@@ -244,24 +214,12 @@ header {
   right: 20px;
   height: 150px;
   width: 280px;
-  -webkit-box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
-          box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
   padding: 5px;
   text-align: center;
   z-index: 96;
-  -webkit-animation: fadein 3s;
-          animation: fadein 3s;
+  animation: fadein 3s;
 }
-
-@-webkit-keyframes fadein {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 @keyframes fadein {
   from {
     opacity: 0;
@@ -270,7 +228,6 @@ header {
     opacity: 1;
   }
 }
-
 .notification_1 h3,
 .notification_2 h3,
 .notification_3 h3 {
@@ -283,7 +240,6 @@ header {
   color: whitesmoke;
   text-shadow: 1px 1px 2px black;
 }
-
 .notification_1 p,
 .notification_2 p,
 .notification_3 p {
@@ -293,7 +249,6 @@ header {
   color: whitesmoke;
   text-shadow: 1px 1px 2px black;
 }
-
 .notification_1 input,
 .notification_2 input,
 .notification_3 input {
@@ -301,7 +256,6 @@ header {
   font-size: 14px;
   width: 100px;
 }
-
 .notification_1:hover,
 .notification_2:hover,
 .notification_3:hover {
@@ -320,5 +274,4 @@ header {
 
 .notification_3 {
   bottom: 380px;
-}
-/*# sourceMappingURL=style.css.map */
+}/*# sourceMappingURL=style.css.map */
