@@ -156,6 +156,7 @@ header {
   height: 0;
   display: flex;
   justify-content: center;
+  overflow: hidden;
   background-color: white;
 }
 #add_activity #activity_parameters #color {

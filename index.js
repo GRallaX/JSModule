@@ -5,7 +5,7 @@ const cElem = (tagName, className, text) => {
   return elem;
 };
 
-const gElem = (param) => {
+const gElem = param => {
   let elem = "";
   if (param.substr(0, 1) === ".") {
     elem = document.querySelectorAll(param);
@@ -63,7 +63,7 @@ class TimeTable {
     //Проверяем на наличие событий в кэше и создаем
     if (!localStorage.activities) {
       this.activities = [];
-      arrOfActivities.forEach((activity) => {
+      arrOfActivities.forEach(activity => {
         const newActivity = {};
         newActivity.title = activity.title;
         newActivity.start = activity.start + 8 * 60;
@@ -111,7 +111,7 @@ class TimeTable {
       timer: timer || false,
     };
 
-    if (this.activities.filter((e) => e.id === activity.id).length) {
+    if (this.activities.filter(e => e.id === activity.id).length) {
       this.activities.forEach((item, index, arr) => {
         if (item.id === activity.id) {
           arr.splice(index, 1);
@@ -149,7 +149,7 @@ class TimeTable {
 }
 
 //Функция отрисовки событий
-const renderActivity = (scheduleForRender) => {
+const renderActivity = scheduleForRender => {
   calendarWallpaper(
     scheduleForRender.config.dayStart,
     scheduleForRender.config.dayEnd
@@ -158,7 +158,7 @@ const renderActivity = (scheduleForRender) => {
   activitiesForRender = [...scheduleForRender.activities].sort((a1, a2) => {
     return a1.start - a2.start;
   });
-  activitiesForRender.forEach((item) => (item.column = 0));
+  activitiesForRender.forEach(item => (item.column = 0));
 
   for (let activity of activitiesForRender) {
     activity.column = !activity.column ? 0 : activity.column;
@@ -265,7 +265,7 @@ const renderActivity = (scheduleForRender) => {
       }, (end * 60 - timeNow) * 1000);
       backgroundColor.splice(3, 1, "0.85)");
       notifContainer.style.background = backgroundColor.join(" ");
-      notifContainer.addEventListener("click", (e) => {
+      notifContainer.addEventListener("click", e => {
         e.stopPropagation();
         e.stopImmediatePropagation();
       });
@@ -325,7 +325,7 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 //Изменение продолжительности дня
-gElem("#day_longevity").addEventListener("submit", (e) => {
+gElem("#day_longevity").addEventListener("submit", e => {
   e.preventDefault();
   schedule.changeDaydayLongevity(
     e.target.dayStart.valueAsNumber / 1000 / 60 / 60,
@@ -334,7 +334,7 @@ gElem("#day_longevity").addEventListener("submit", (e) => {
   gElem("#show").value = "false";
   gElem("#changing_day").style.display = "none";
 });
-gElem("#day_longevity").addEventListener("reset", (e) => {
+gElem("#day_longevity").addEventListener("reset", e => {
   e.preventDefault();
   schedule.changeDaydayLongevity();
   localStorage.removeItem("config");
@@ -353,7 +353,7 @@ gElem("#day_longevity").addEventListener("reset", (e) => {
 });
 
 //Демонтсрация/скрытие панели редактирования времени дня
-gElem("#show").addEventListener("click", (e) => {
+gElem("#show").addEventListener("click", e => {
   e.preventDefault();
   if (e.target.value === "false") {
     e.target.value = "true";
@@ -396,7 +396,7 @@ const closeElemParams = () => {
   gElem("#btn_add").value = "false";
 };
 
-gElem("#btn_add").addEventListener("click", (e) => {
+gElem("#btn_add").addEventListener("click", e => {
   e.preventDefault();
   if (e.target.value === "false") {
     openElemParams();
@@ -406,17 +406,17 @@ gElem("#btn_add").addEventListener("click", (e) => {
 });
 
 //Работаем с цветом на окошке нового события
-gElem("#color_picker").addEventListener("click", (e) => {
+gElem("#color_picker").addEventListener("click", e => {
   e.preventDefault();
   if (!e.target.value || e.target.value === "disabled") {
     gElem("#activity_parameters_main").style.height = "300px";
-    gElem("#colorWheel").style.height = "200px";
+    gElem("#colorWheel").style.height = "auto";
     colorWheel.resize(240);
     e.target.value = "enabled";
     const modalBackgr = cElem("div", "modalBckgr");
     modalBackgr.addEventListener(
       "click",
-      (clickToClose = (e) => {
+      (clickToClose = e => {
         gElem("#color_picker").value = "disabled";
         colorWheel.resize(0);
         gElem("#activity_parameters_main").style.height = "unset";
@@ -426,7 +426,7 @@ gElem("#color_picker").addEventListener("click", (e) => {
     );
     gElem("header").add(modalBackgr);
   } else {
-    gElem(".modalBckgr").forEach((item) => item.parentNode.removeChild(item));
+    gElem(".modalBckgr").forEach(item => item.parentNode.removeChild(item));
     e.target.value = "disabled";
     colorWheel.resize(0);
     gElem("#colorWheel").style.height = "0";
@@ -451,7 +451,7 @@ const clearParams = () => {
 };
 
 //Добавляем новое событие
-const submitNewActivity = (e) => {
+const submitNewActivity = e => {
   e.preventDefault();
   if (
     schedule.setActivity(
@@ -466,7 +466,7 @@ const submitNewActivity = (e) => {
   }
 };
 
-const pressEnterToSubmit = (e) => {
+const pressEnterToSubmit = e => {
   if (e.keyCode == 13) {
     e.preventDefault();
     e.stopImmediatePropagation();
@@ -476,13 +476,13 @@ const pressEnterToSubmit = (e) => {
 
 gElem("#add_activity").addEventListener("submit", submitNewActivity);
 gElem("#add_activity").addEventListener("keypress", pressEnterToSubmit);
-gElem("#add_activity").addEventListener("reset", (e) => {
+gElem("#add_activity").addEventListener("reset", e => {
   e.preventDefault();
   clearParams();
 });
 
 //Очищаем локал сторадж событий
-const clearAll = (e) => {
+const clearAll = e => {
   e.preventDefault();
   localStorage.removeItem("activities");
   clearParams();
@@ -502,10 +502,10 @@ clearAllBtn();
 
 const addClickOnAct = () => {
   let counterAddClick = 0;
-  gElem(".activity").forEach((item) => {
-    item.addEventListener("click", (e) => {
+  gElem(".activity").forEach(item => {
+    item.addEventListener("click", e => {
       const id = e.target.id.split("activity_").join("");
-      const actArr = schedule.activities.filter((act) => act.id == id);
+      const actArr = schedule.activities.filter(act => act.id == id);
       const act = actArr[0];
       openElemParams();
       gElem("#add_activity").activity_title.value = act.title;
@@ -523,7 +523,7 @@ const addClickOnAct = () => {
       gElem("#apply_act").innerHTML = "Change";
       gElem("#apply_act").addEventListener(
         "click",
-        (changeActivity = (e) => {
+        (changeActivity = e => {
           e.preventDefault();
           if (
             schedule.setActivity(
@@ -561,7 +561,7 @@ const addClickOnAct = () => {
       gElem("#btn_reset").innerHTML = "Cancel";
       gElem("#btn_reset").addEventListener(
         "click",
-        (resetChangeAct = (e) => {
+        (resetChangeAct = e => {
           e.preventDefault();
           clearParams();
           closeElemParams();
@@ -591,10 +591,10 @@ const addClickOnAct = () => {
 
       gElem("#btn_clear").addEventListener(
         "click",
-        (deleteActivity = (e) => {
+        (deleteActivity = e => {
           e.preventDefault();
           schedule.activities = schedule.activities.filter(
-            (item) => item.id != id
+            item => item.id != id
           );
           renderActivity(schedule);
           addClickOnAct();
@@ -633,7 +633,7 @@ const addClickOnAct = () => {
       counterAddClick++;
       gElem("#add_activity").addEventListener(
         "keypress",
-        (submitChangeAct = (e) => {
+        (submitChangeAct = e => {
           if (e.keyCode == 13) {
             e.preventDefault();
             e.stopImmediatePropagation();
@@ -676,7 +676,7 @@ const addClickOnAct = () => {
 addClickOnAct();
 
 //Помогаем вводить время активности (+15мин)
-gElem("#activityStart").addEventListener("change", (e) => {
+gElem("#activityStart").addEventListener("change", e => {
   if (
     !gElem("#activityEnd").value ||
     gElem("#activityEnd").valueAsNumber <= gElem("#activityStart").valueAsNumber
@@ -685,7 +685,7 @@ gElem("#activityStart").addEventListener("change", (e) => {
       e.target.valueAsNumber + 15 * 60 * 1000;
   }
 });
-gElem("#activityEnd").addEventListener("change", (e) => {
+gElem("#activityEnd").addEventListener("change", e => {
   if (
     !gElem("#activityStart").value ||
     gElem("#activityEnd").valueAsNumber <= gElem("#activityStart").valueAsNumber
